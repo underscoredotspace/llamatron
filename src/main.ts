@@ -1,6 +1,6 @@
 import { SCREEN_HEIGHT, SCREEN_WIDTH, SPEED } from "./constants";
 import { Player } from "./objects/Player";
-import { keyboard } from "./keyboard";
+import { keyboard as keys } from "./keyboard";
 import { getScreen } from "./screen";
 import "./style.css";
 
@@ -8,8 +8,6 @@ const { context } = getScreen();
 const player = Player(context);
 
 const checkKeys = () => {
-  const { keys } = keyboard;
-
   if (keys["ArrowLeft"] && !keys["ArrowRight"]) {
     player.move(-SPEED);
   }

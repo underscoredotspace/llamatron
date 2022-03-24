@@ -17,7 +17,7 @@ const _keyboard = () => {
     }
   });
 
-  return { keys };
+  return keys;
 };
 
 export const keyboard = _keyboard();

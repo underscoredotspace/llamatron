@@ -15,11 +15,19 @@ export const Player = (context: CanvasRenderingContext2D) => {
     const newX = xPos + x;
     const newY = yPos + y;
 
-    if (newX > 0 && newX < SCREEN_WIDTH - SPRITE_SIZE) {
+    if (newX <= 0) {
+      xPos = 0;
+    } else if (newX >= SCREEN_WIDTH - SPRITE_SIZE) {
+      xPos = SCREEN_WIDTH - SPRITE_SIZE;
+    } else {
       xPos = newX;
     }
 
-    if (newY > 0 && newY < SCREEN_HEIGHT - SPRITE_SIZE) {
+    if (newY <= 0) {
+      yPos = 0;
+    } else if (newY >= SCREEN_HEIGHT - SPRITE_SIZE) {
+      yPos = SCREEN_HEIGHT - SPRITE_SIZE;
+    } else {
       yPos = newY;
     }
   };
