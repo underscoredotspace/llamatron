@@ -1,6 +1,6 @@
 import { SCREEN_HEIGHT, SCREEN_WIDTH, SPEED } from "./constants";
 import { Player } from "./objects/Player";
-import { keyboard as keys } from "./keyboard";
+import { keys } from "./keys";
 import { getScreen } from "./screen";
 import "./style.css";
 

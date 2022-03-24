@@ -2,7 +2,7 @@ interface Keys {
   [key: string]: boolean;
 }
 
-const _keyboard = () => {
+const _keys = () => {
   const keys: Keys = {};
 
   document.addEventListener("keydown", ({ code }) => {
@@ -20,4 +20,4 @@ const _keyboard = () => {
   return keys;
 };
 
-export const keyboard = _keyboard();
+export const keys = _keys();
