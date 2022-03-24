@@ -1,4 +1,4 @@
-import { SCREEN_HEIGHT, SCREEN_WIDTH } from "./constants";
+import { SCREEN_HEIGHT, SCREEN_WIDTH, SPEED } from "./constants";
 import { Player } from "./objects/Player";
 import { keyboard } from "./keyboard";
 import { getScreen } from "./screen";
@@ -11,19 +11,19 @@ const checkKeys = () => {
   const { keys } = keyboard;
 
   if (keys["ArrowLeft"] && !keys["ArrowRight"]) {
-    player.move(-1);
+    player.move(-SPEED);
   }
 
   if (keys["ArrowRight"] && !keys["ArrowLeft"]) {
-    player.move(1);
+    player.move(SPEED);
   }
 
   if (keys["ArrowUp"] && !keys["ArrowDown"]) {
-    player.move(0, -1);
+    player.move(0, -SPEED);
   }
 
   if (keys["ArrowDown"] && !keys["ArrowUp"]) {
-    player.move(0, 1);
+    player.move(0, SPEED);
   }
 };
 
