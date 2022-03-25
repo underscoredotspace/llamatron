@@ -1,4 +1,4 @@
-import { SCREEN_HEIGHT, SCREEN_WIDTH, SPEED } from "./constants";
+import { SCREEN_HEIGHT, SCREEN_WIDTH } from "./constants";
 import { Player } from "./objects/Player";
 import { keys } from "./keys";
 import { getScreen } from "./screen";
@@ -8,29 +8,30 @@ const { context } = getScreen();
 const player = Player(context);
 
 const checkKeys = () => {
-  if (keys["ArrowLeft"] && !keys["ArrowRight"]) {
-    player.move(-SPEED);
+  // check x
+  if (!keys["ArrowLeft"] && !keys["ArrowRight"]) {
+    player.move({ x: 0 });
+  } else if (keys["ArrowLeft"] && !keys["ArrowRight"]) {
+    player.move({ x: -1 });
+  } else if (keys["ArrowRight"] && !keys["ArrowLeft"]) {
+    player.move({ x: 1 });
   }
-
-  if (keys["ArrowRight"] && !keys["ArrowLeft"]) {
-    player.move(SPEED);
-  }
-
-  if (keys["ArrowUp"] && !keys["ArrowDown"]) {
-    player.move(0, -SPEED);
-  }
-
-  if (keys["ArrowDown"] && !keys["ArrowUp"]) {
-    player.move(0, SPEED);
+  // check y
+  if (!keys["ArrowUp"] && !keys["ArrowDown"]) {
+    player.move({ y: 0 });
+  } else if (keys["ArrowUp"] && !keys["ArrowDown"]) {
+    player.move({ y: -1 });
+  } else if (keys["ArrowDown"] && !keys["ArrowUp"]) {
+    player.move({ y: 1 });
   }
 };
 
-const animate = async (ctx: CanvasRenderingContext2D, _ticks: number) => {
-  requestAnimationFrame((newTicks) => animate(ctx, newTicks));
+const animate = () => {
+  requestAnimationFrame(animate);
 
   checkKeys();
-  ctx.clearRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+  context.clearRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
   player.draw();
 };
 
-animate(context, performance.now());
+animate();
