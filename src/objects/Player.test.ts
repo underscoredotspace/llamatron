@@ -1,4 +1,5 @@
-import { Direction, Player } from "./Player";
+import { Direction } from "../direction";
+import { Player } from "./Player";
 
 describe("Player object", () => {
   const context = {} as any;
