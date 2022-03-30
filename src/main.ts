@@ -24,14 +24,26 @@ const checkKeys = () => {
   } else if (keys["ArrowDown"] && !keys["ArrowUp"]) {
     player.move({ y: 1 });
   }
+
+  if (keys["ShiftLeft"] || keys["ShiftRight"]) {
+    player.setHold(true);
+  } else {
+    player.setHold(false);
+  }
 };
 
-const animate = () => {
-  requestAnimationFrame(animate);
+let lastRender = 0;
+const fps = 15;
+const fpsInterval = 1000 / fps;
 
+const animate = (newtime: number) => {
+  requestAnimationFrame(animate);
   checkKeys();
+
+  const elapsed = newtime - lastRender;
+  if (elapsed < fpsInterval) return;
   context.clearRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
   player.draw();
 };
 
-animate();
+animate(performance.now());

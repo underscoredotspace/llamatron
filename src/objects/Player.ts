@@ -23,10 +23,9 @@ export const Player = (context: CanvasRenderingContext2D) => {
   let xHead = 0;
   let yHead = 0;
   let direction = Direction.LEFT;
+  let hold = false;
 
   const update = () => {
-    fire();
-    if (nextFire > 0) nextFire--;
     let speed = xHead !== 0 && yHead !== 0 ? PLAYER_DIAG_SPEED : PLAYER_SPEED;
 
     xPos = clamp(xPos + xHead * speed, 0, SCREEN_WIDTH - SPRITE_SIZE);
@@ -34,7 +33,10 @@ export const Player = (context: CanvasRenderingContext2D) => {
   };
 
   const fire = () => {
-    if (nextFire > 0) return;
+    if (nextFire > 0) {
+      nextFire--;
+      return;
+    }
 
     nextFire = 15;
 
@@ -43,11 +45,11 @@ export const Player = (context: CanvasRenderingContext2D) => {
   };
 
   const draw = () => {
-    bullets.draw();
-    setDirection();
     update();
+    fire();
     context.fillStyle = "gold";
     context.fillRect(xPos, yPos, SPRITE_SIZE, SPRITE_SIZE);
+    bullets.draw();
   };
 
   const setDirection = () => {
@@ -58,13 +60,24 @@ export const Player = (context: CanvasRenderingContext2D) => {
     }
   };
 
+  const setHold = (shouldHold: boolean) => {
+    hold = shouldHold;
+  };
+
   const move: Move = ({ x, y }) => {
+    if (x === xHead && y === yHead) {
+      return;
+    }
     if (typeof x !== "undefined") {
       xHead = x;
     }
 
     if (typeof y !== "undefined") {
       yHead = y;
+    }
+
+    if (!hold) {
+      setDirection();
     }
   };
 
@@ -79,6 +92,7 @@ export const Player = (context: CanvasRenderingContext2D) => {
   return {
     draw,
     move,
+    setHold,
     _v,
     _f: {
       update,

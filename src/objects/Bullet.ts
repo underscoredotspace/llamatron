@@ -23,7 +23,7 @@ export const BulletController = (context: CanvasRenderingContext2D) => {
     bullets.push(CreateBullet({ xPos, yPos, xHead, yHead, color: "red" }));
   };
 
-  const update = async () => {
+  const update = () => {
     bullets = bullets
       .map(({ xPos, yPos, xHead, yHead, ...others }) => ({
         xPos: xPos + xHead,
