@@ -25,11 +25,7 @@ const checkKeys = () => {
     player.move({ y: 1 });
   }
 
-  if (keys["ShiftLeft"] || keys["ShiftRight"]) {
-    player.setHold(true);
-  } else {
-    player.setHold(false);
-  }
+  player.setHold(keys["Shift"]);
 };
 
 let lastRender = 0;
