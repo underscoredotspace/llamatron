@@ -7,10 +7,17 @@ export const Baddie = (
 ) => {
   const position = startPosition;
   let heading: Vector = { x: 0, y: 0 };
+  let lastMove = 0;
 
   const move = () => {
-    position.x += heading.x / 3;
-    position.y += heading.y / 3;
+    if (lastMove > 0) {
+      lastMove--;
+      return;
+    }
+
+    lastMove = 5;
+    position.x += heading.x;
+    position.y += heading.y;
   };
 
   const draw = () => {

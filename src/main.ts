@@ -30,7 +30,7 @@ const checkKeys = () => {
 };
 
 let lastRender = 0;
-const fps = 15;
+const fps = 30;
 const fpsInterval = 1000 / fps;
 
 const baddies: BaddieType[] = [
