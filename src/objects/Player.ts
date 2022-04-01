@@ -7,7 +7,7 @@ import {
   PLAYER_BULLET_DIAG_SPEED,
   PLAYER_BULLET_SPEED,
 } from "../constants";
-import { Direction, getDirection, getHeading } from "../direction";
+import { Direction, getDirection, getHeading, Vector } from "../direction";
 import { clamp } from "../helpers";
 import { BulletController } from "./Bullet";
 import { Move } from "./Player.types";
@@ -28,6 +28,8 @@ export const Player = (context: CanvasRenderingContext2D) => {
   let hold = false;
 
   const isHeadDiag = () => xHead !== 0 && yHead !== 0;
+
+  const getPosition = (): Vector => ({ x: xPos, y: yPos });
 
   const update = () => {
     let speed = isHeadDiag() ? PLAYER_DIAG_SPEED : PLAYER_SPEED;
@@ -97,6 +99,7 @@ export const Player = (context: CanvasRenderingContext2D) => {
     draw,
     move,
     setHold,
+    getPosition,
     _v,
     _f: {
       update,

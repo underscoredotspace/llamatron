@@ -1,8 +1,9 @@
-import { SCREEN_HEIGHT, SCREEN_WIDTH } from "./constants";
+import { SCREEN_HEIGHT, SCREEN_WIDTH, SPRITE_SIZE } from "./constants";
 import { Player } from "./objects/Player";
 import { keys } from "./keys";
 import { getScreen } from "./screen";
 import "./style.css";
+import { Baddie, BaddieType } from "./objects/Baddie";
 
 const { context } = getScreen();
 const player = Player(context);
@@ -32,6 +33,16 @@ let lastRender = 0;
 const fps = 15;
 const fpsInterval = 1000 / fps;
 
+const baddies: BaddieType[] = [
+  Baddie(context, { x: 50, y: 50 }),
+  Baddie(context, { x: SCREEN_WIDTH - 50 - SPRITE_SIZE, y: 50 }),
+  Baddie(context, { x: 50, y: SCREEN_HEIGHT - 50 - SPRITE_SIZE }),
+  Baddie(context, {
+    x: SCREEN_WIDTH - 50 - SPRITE_SIZE,
+    y: SCREEN_HEIGHT - 50 - SPRITE_SIZE,
+  }),
+];
+
 const animate = (newtime: number) => {
   requestAnimationFrame(animate);
   checkKeys();
@@ -40,6 +51,12 @@ const animate = (newtime: number) => {
   if (elapsed < fpsInterval) return;
   context.clearRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
   player.draw();
+  const playerPosition = player.getPosition();
+
+  baddies.forEach((baddie) => {
+    baddie.setHeading(playerPosition);
+    baddie.draw();
+  });
 };
 
 animate(performance.now());
