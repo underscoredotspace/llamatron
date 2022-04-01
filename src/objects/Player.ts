@@ -4,8 +4,6 @@ import {
   SCREEN_HEIGHT,
   PLAYER_SPEED,
   PLAYER_DIAG_SPEED,
-  PLAYER_BULLET_DIAG_SPEED,
-  PLAYER_BULLET_SPEED,
 } from "../constants";
 import { Direction, getDirection, getHeading, Vector } from "../direction";
 import { clamp } from "../helpers";
