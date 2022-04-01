@@ -67,7 +67,7 @@ export const CreateBullet = ({
 }: Omit<Bullet, "length">): Bullet => {
   const diag = _xHead !== 0 && _yHead !== 0;
 
-  const speed = diag ? PLAYER_BULLET_SPEED : PLAYER_BULLET_DIAG_SPEED;
+  const speed = diag ? PLAYER_BULLET_DIAG_SPEED : PLAYER_BULLET_SPEED;
   const length = diag ? PLAYER_BULLET_DIAG_LENGTH : PLAYER_BULLET_LENGTH;
 
   return {

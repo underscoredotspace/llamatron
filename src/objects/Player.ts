@@ -4,6 +4,8 @@ import {
   SCREEN_HEIGHT,
   PLAYER_SPEED,
   PLAYER_DIAG_SPEED,
+  PLAYER_BULLET_DIAG_SPEED,
+  PLAYER_BULLET_SPEED,
 } from "../constants";
 import { Direction, getDirection, getHeading } from "../direction";
 import { clamp } from "../helpers";
@@ -25,8 +27,10 @@ export const Player = (context: CanvasRenderingContext2D) => {
   let direction = Direction.LEFT;
   let hold = false;
 
+  const isHeadDiag = () => xHead !== 0 && yHead !== 0;
+
   const update = () => {
-    let speed = xHead !== 0 && yHead !== 0 ? PLAYER_DIAG_SPEED : PLAYER_SPEED;
+    let speed = isHeadDiag() ? PLAYER_DIAG_SPEED : PLAYER_SPEED;
 
     xPos = clamp(xPos + xHead * speed, 0, SCREEN_WIDTH - SPRITE_SIZE);
     yPos = clamp(yPos + yHead * speed, 0, SCREEN_HEIGHT - SPRITE_SIZE);
