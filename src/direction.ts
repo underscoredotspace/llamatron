@@ -9,6 +9,17 @@ export enum Direction {
   UPLEFT = 315,
 }
 
+const DIRECTIONS = [
+  Direction.UP,
+  Direction.UPRIGHT,
+  Direction.RIGHT,
+  Direction.DOWNRIGHT,
+  Direction.DOWN,
+  Direction.DOWNLEFT,
+  Direction.LEFT,
+  Direction.UPLEFT,
+];
+
 export const DirectionMap = [
   [Direction.UPLEFT, Direction.UP, Direction.UPRIGHT],
   [Direction.LEFT, undefined, Direction.RIGHT],
@@ -18,7 +29,7 @@ export const DirectionMap = [
 export const getDirection = (x: number, y: number): Direction | undefined =>
   DirectionMap[y + 1][x + 1];
 
-type Vector = {
+export type Vector = {
   x: number;
   y: number;
 };
@@ -39,3 +50,27 @@ const HEADINGS: Headings = {
 };
 
 export const getHeading = (direction: Direction): Vector => HEADINGS[direction];
+
+// Returns vector2's angle relative to vector1
+export const getRelativeAngle = (vector1: Vector, vector2: Vector): number => {
+  const dx = vector1.x - vector2.x;
+  const dy = vector1.y - vector2.y;
+
+  const rad = Math.atan2(dy, dx);
+  const deg = Math.floor((rad * 180) / Math.PI - 90);
+
+  if (deg >= 360) {
+    return deg - 360;
+  }
+
+  if (deg < 0) {
+    return deg + 360;
+  }
+
+  return deg;
+};
+
+export const getRelativeDirection = (
+  vector1: Vector,
+  vector2: Vector
+): Direction => DIRECTIONS[Math.round(getRelativeAngle(vector1, vector2) / 45)];
