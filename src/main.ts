@@ -7,8 +7,13 @@ import { Baddie, BaddieType } from "./objects/Baddie";
 
 const { context } = getScreen();
 const player = Player(context);
+let paused = false;
+
+export const setPaused = () => (paused = true);
 
 const checkKeys = () => {
+  paused = keys["pause"];
+
   // check x
   if (!keys["ArrowLeft"] && !keys["ArrowRight"]) {
     player.move({ x: 0 });
@@ -48,13 +53,18 @@ const animate = (newtime: number) => {
   checkKeys();
 
   const elapsed = newtime - lastRender;
-  if (elapsed < fpsInterval) return;
+  if (paused || elapsed < fpsInterval) return;
+
   context.clearRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+
+  player.update();
   player.draw();
+
   const playerPosition = player.getPosition();
 
   baddies.forEach((baddie) => {
     baddie.setHeading(playerPosition);
+    baddie.move();
     baddie.draw();
   });
 };

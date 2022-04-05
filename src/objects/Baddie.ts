@@ -21,7 +21,6 @@ export const Baddie = (
   };
 
   const draw = () => {
-    move();
     context.fillStyle = "blue";
     context.fillRect(position.x, position.y, SPRITE_SIZE, SPRITE_SIZE);
   };
@@ -32,6 +31,7 @@ export const Baddie = (
   };
 
   return {
+    move,
     draw,
     setHeading,
   };

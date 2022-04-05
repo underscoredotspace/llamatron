@@ -34,6 +34,8 @@ export const Player = (context: CanvasRenderingContext2D) => {
 
     xPos = clamp(xPos + xHead * speed, 0, SCREEN_WIDTH - SPRITE_SIZE);
     yPos = clamp(yPos + yHead * speed, 0, SCREEN_HEIGHT - SPRITE_SIZE);
+
+    fire();
   };
 
   const fire = () => {
@@ -49,8 +51,6 @@ export const Player = (context: CanvasRenderingContext2D) => {
   };
 
   const draw = () => {
-    update();
-    fire();
     context.fillStyle = "gold";
     context.fillRect(xPos, yPos, SPRITE_SIZE, SPRITE_SIZE);
     bullets.draw();
@@ -94,13 +94,13 @@ export const Player = (context: CanvasRenderingContext2D) => {
   });
 
   return {
+    update,
     draw,
     move,
     setHold,
     getPosition,
     _v,
     _f: {
-      update,
       setDirection,
     },
   };

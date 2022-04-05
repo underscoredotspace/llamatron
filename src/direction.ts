@@ -73,4 +73,9 @@ export const getRelativeAngle = (vector1: Vector, vector2: Vector): number => {
 export const getRelativeDirection = (
   vector1: Vector,
   vector2: Vector
-): Direction => DIRECTIONS[Math.round(getRelativeAngle(vector1, vector2) / 45)];
+): Direction => {
+  const relativeAngle = getRelativeAngle(vector1, vector2);
+  const roundedAngle = Math.round(relativeAngle / 45);
+
+  return DIRECTIONS[roundedAngle === 8 ? 0 : roundedAngle];
+};

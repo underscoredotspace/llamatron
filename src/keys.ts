@@ -1,20 +1,17 @@
+import { debugElement } from "./debug";
+
 interface Keys {
   [key: string]: boolean;
 }
 
-const keysElement = document.querySelector<HTMLDivElement>(".keys")!;
-const preElement = keysElement.querySelector<HTMLDivElement>("pre")!;
-
-if (import.meta.env.DEV) {
-  keysElement.hidden = false;
-}
+const keysElement = debugElement.querySelector<HTMLDivElement>("pre")!;
 
 const setKeys = (keys: Keys) => {
   if (import.meta.env.PROD) {
     return;
   }
 
-  preElement.innerText = Object.entries(keys)
+  keysElement.innerText = Object.entries(keys)
     .filter(([_k, v]) => v)
     .map(([key]) => key)
     .join("\n");
@@ -22,6 +19,12 @@ const setKeys = (keys: Keys) => {
 
 const _keys = () => {
   const keys: Keys = {};
+
+  document.addEventListener("keypress", ({ code }) => {
+    if (code === "KeyP") {
+      keys["pause"] = !keys["pause"];
+    }
+  });
 
   document.addEventListener("keydown", ({ code, shiftKey }) => {
     if (!keys[code]) {
