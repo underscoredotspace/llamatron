@@ -8,7 +8,7 @@ import {
 import { random } from "../helpers";
 import { Bullet } from "./Bullet";
 
-export const Baddie = (
+export const BaddieController = (
   context: CanvasRenderingContext2D,
   startPosition: Vector
 ) => {
@@ -58,14 +58,14 @@ export const Baddie = (
       );
 
       if (
-        (bullet.position.x > left &&
-          bullet.position.x < right &&
-          bullet.position.y > top &&
-          bullet.position.y < bottom) ||
         (bulletEnd.x > left &&
           bulletEnd.x < right &&
           bulletEnd.y > top &&
-          bulletEnd.y < bottom)
+          bulletEnd.y < bottom) ||
+        (bullet.position.x > left &&
+          bullet.position.x < right &&
+          bullet.position.y > top &&
+          bullet.position.y < bottom)
       ) {
         console.log("a baddie is dead");
         dead = true;
@@ -85,4 +85,4 @@ export const Baddie = (
   };
 };
 
-export type BaddieType = ReturnType<typeof Baddie>;
+export type BaddieType = ReturnType<typeof BaddieController>;

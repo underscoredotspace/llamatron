@@ -18,6 +18,7 @@ const DIRECTIONS = [
   Direction.DOWNLEFT,
   Direction.LEFT,
   Direction.UPLEFT,
+  Direction.UP,
 ];
 
 export const DirectionMap = [
@@ -83,7 +84,7 @@ export const getRelativeDirection = (
   const relativeAngle = getRelativeAngle(vector1, vector2);
   const roundedAngle = Math.round(relativeAngle / 45);
 
-  return DIRECTIONS[roundedAngle === 8 ? 0 : roundedAngle];
+  return DIRECTIONS[roundedAngle];
 };
 
 export const getLineEnd = (
