@@ -3,15 +3,21 @@ import { Player } from "./Player";
 
 describe("Player object", () => {
   const context = {} as any;
+  const bullets = {} as any;
+
   test("intial state", () => {
-    const player = Player(context);
+    const player = Player(context, bullets);
 
     expect(player._v()).toEqual({
       direction: Direction.LEFT,
-      xPos: 312,
-      yPos: 192,
-      xHead: 0,
-      yHead: 0,
+      position: {
+        x: 312,
+        y: 192,
+      },
+      heading: {
+        x: 0,
+        y: 0,
+      },
     });
   });
 
@@ -26,15 +32,17 @@ describe("Player object", () => {
     ${-1}        | ${1}         | ${Direction.DOWNLEFT}
     ${1}         | ${1}         | ${Direction.DOWNRIGHT}
   `("move({ x: $x, y: $y })", ({ x, y, direction }) => {
-    const player = Player(context);
+    const player = Player(context, bullets);
     player.move({ x });
     player.move({ y });
     player._f.setDirection();
 
     expect(player._v()).toMatchObject({
       direction,
-      xHead: x ?? 0,
-      yHead: y ?? 0,
+      heading: {
+        x: x ?? 0,
+        y: y ?? 0,
+      },
     });
   });
 });
