@@ -4,3 +4,6 @@ export const clamp = (value: number, min: number, max: number): number => {
 
   return value;
 };
+
+export const random = (min: number, max: number): number =>
+  Math.floor(Math.random() * (max - min) + min);

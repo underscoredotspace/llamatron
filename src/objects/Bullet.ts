@@ -1,79 +1,72 @@
 import {
-  PLAYER_BULLET_DIAG_LENGTH,
+  PLAYER_BULLET_COLOR,
   PLAYER_BULLET_DIAG_SPEED,
   PLAYER_BULLET_LENGTH,
   PLAYER_BULLET_SPEED,
   SCREEN_HEIGHT,
   SCREEN_WIDTH,
 } from "../constants";
+import { getLineEnd, isDiag, Vector } from "../direction";
 
-interface Bullet {
-  xPos: number;
-  yPos: number;
-  xHead: number;
-  yHead: number;
-  color: string;
-  length: number;
+export interface Bullet {
+  position: Vector;
+  heading: Vector;
 }
 
 export const BulletController = (context: CanvasRenderingContext2D) => {
   let bullets: Bullet[] = [];
 
-  const fire = (xPos: number, yPos: number, xHead: number, yHead: number) => {
-    bullets.push(CreateBullet({ xPos, yPos, xHead, yHead, color: "red" }));
+  const getBullets = () => bullets;
+
+  const fire = (position: Vector, heading: Vector) => {
+    bullets.push({ position, heading });
   };
 
   const update = () => {
     bullets = bullets
-      .map(({ xPos, yPos, xHead, yHead, ...others }) => ({
-        xPos: xPos + xHead,
-        yPos: yPos + yHead,
-        xHead,
-        yHead,
-        ...others,
-      }))
+      .map(({ position, heading, ...others }) => {
+        const speed = isDiag(heading)
+          ? PLAYER_BULLET_DIAG_SPEED
+          : PLAYER_BULLET_SPEED;
+
+        return {
+          position: {
+            x: position.x + heading.x * speed,
+            y: position.y + heading.y * speed,
+          },
+          heading,
+          ...others,
+        };
+      })
       .filter(
-        ({ xPos, yPos }) =>
-          xPos > 0 && xPos < SCREEN_WIDTH && yPos > 0 && yPos < SCREEN_HEIGHT
+        ({ position }) =>
+          position.x > 0 &&
+          position.x < SCREEN_WIDTH &&
+          position.y > 0 &&
+          position.y < SCREEN_HEIGHT
       );
   };
 
   const draw = () => {
     update();
 
-    bullets.forEach(({ xPos, yPos, xHead, yHead, length = 0, color }) => {
-      const xLength = xHead > 0 ? length : -length;
-      const yLength = yHead > 0 ? length : -length;
+    bullets.forEach(({ position, heading }) => {
+      const end = getLineEnd(position, heading, PLAYER_BULLET_LENGTH);
 
       context.beginPath();
-      context.moveTo(xPos, yPos);
-      context.lineTo(
-        xHead !== 0 ? xPos + xLength : xPos,
-        yHead !== 0 ? yPos + yLength : yPos
-      );
-      context.strokeStyle = color;
+      context.moveTo(position.x, position.y);
+      context.lineTo(end.x, end.y);
+      context.strokeStyle = PLAYER_BULLET_COLOR;
       context.stroke();
       context.closePath();
     });
   };
 
-  return { draw, fire, _f: () => ({ update }) };
-};
-
-export const CreateBullet = ({
-  xHead: _xHead,
-  yHead: _yHead,
-  ...otherProps
-}: Omit<Bullet, "length">): Bullet => {
-  const diag = _xHead !== 0 && _yHead !== 0;
-
-  const speed = diag ? PLAYER_BULLET_DIAG_SPEED : PLAYER_BULLET_SPEED;
-  const length = diag ? PLAYER_BULLET_DIAG_LENGTH : PLAYER_BULLET_LENGTH;
-
-  return {
-    xHead: _xHead * speed,
-    yHead: _yHead * speed,
-    length,
-    ...otherProps,
+  const reset = () => {
+    bullets = [];
   };
+
+  return { draw, fire, getBullets, reset, _f: () => ({ update }) };
 };
+
+export type BulletControllerInstance = ReturnType<typeof BulletController>;

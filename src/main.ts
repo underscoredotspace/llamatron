@@ -4,15 +4,34 @@ import { keys } from "./keys";
 import { getScreen } from "./screen";
 import "./style.css";
 import { Baddie, BaddieType } from "./objects/Baddie";
+import { enableDebug } from "./debug";
+import { BulletController } from "./objects/Bullet";
 
 const { context } = getScreen();
-const player = Player(context);
+
+const bulletController = BulletController(context);
+const player = Player(context, bulletController);
 let paused = false;
 
 export const setPaused = () => (paused = true);
 
+let baddies: BaddieType[] = [
+  Baddie(context, { x: 50, y: 50 }),
+  Baddie(context, { x: SCREEN_WIDTH - 50 - SPRITE_SIZE, y: 50 }),
+  Baddie(context, { x: 50, y: SCREEN_HEIGHT - 50 - SPRITE_SIZE }),
+  Baddie(context, {
+    x: SCREEN_WIDTH - 50 - SPRITE_SIZE,
+    y: SCREEN_HEIGHT - 50 - SPRITE_SIZE,
+  }),
+];
+
 const checkKeys = () => {
   paused = keys["pause"];
+
+  if (enableDebug && keys["KeyR"]) {
+    player.reset();
+    baddies.forEach(({ reset }) => reset());
+  }
 
   // check x
   if (!keys["ArrowLeft"] && !keys["ArrowRight"]) {
@@ -38,16 +57,6 @@ let lastRender = 0;
 const fps = 30;
 const fpsInterval = 1000 / fps;
 
-const baddies: BaddieType[] = [
-  Baddie(context, { x: 50, y: 50 }),
-  Baddie(context, { x: SCREEN_WIDTH - 50 - SPRITE_SIZE, y: 50 }),
-  Baddie(context, { x: 50, y: SCREEN_HEIGHT - 50 - SPRITE_SIZE }),
-  Baddie(context, {
-    x: SCREEN_WIDTH - 50 - SPRITE_SIZE,
-    y: SCREEN_HEIGHT - 50 - SPRITE_SIZE,
-  }),
-];
-
 const animate = (newtime: number) => {
   requestAnimationFrame(animate);
   checkKeys();
@@ -61,10 +70,14 @@ const animate = (newtime: number) => {
   player.draw();
 
   const playerPosition = player.getPosition();
+  const playerBullets = player.getBullets();
+
+  baddies = baddies.filter((baddie) => baddie.isAlive());
 
   baddies.forEach((baddie) => {
     baddie.setHeading(playerPosition);
     baddie.move();
+    baddie.checkIntersection(playerBullets);
     baddie.draw();
   });
 };

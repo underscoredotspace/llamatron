@@ -26,13 +26,13 @@ export const DirectionMap = [
   [Direction.DOWNLEFT, Direction.DOWN, Direction.DOWNRIGHT],
 ];
 
-export const getDirection = (x: number, y: number): Direction | undefined =>
-  DirectionMap[y + 1][x + 1];
+export const getDirection = (heading: Vector): Direction | undefined =>
+  DirectionMap[Math.floor(heading.y) + 1][Math.floor(heading.x) + 1];
 
-export type Vector = {
+export interface Vector {
   x: number;
   y: number;
-};
+}
 
 interface Headings {
   [direction: number]: Vector;
@@ -51,13 +51,8 @@ const HEADINGS: Headings = {
 
 export const getHeading = (direction: Direction): Vector => HEADINGS[direction];
 
-// Returns vector2's angle relative to vector1
-export const getRelativeAngle = (vector1: Vector, vector2: Vector): number => {
-  const dx = vector1.x - vector2.x;
-  const dy = vector1.y - vector2.y;
-
-  const rad = Math.atan2(dy, dx);
-  const deg = Math.floor((rad * 180) / Math.PI - 90);
+export const toDeg = (rad: number) => {
+  const deg = (rad * 180) / Math.PI - 90;
 
   if (deg >= 360) {
     return deg - 360;
@@ -70,6 +65,17 @@ export const getRelativeAngle = (vector1: Vector, vector2: Vector): number => {
   return deg;
 };
 
+export const toRad = (deg: number) => ((deg - 90) * Math.PI) / 180;
+
+// Returns vector2's angle relative to vector1
+export const getRelativeAngle = (vector1: Vector, vector2: Vector): number => {
+  const dx = vector1.x - vector2.x;
+  const dy = vector1.y - vector2.y;
+
+  const rad = Math.atan2(dy, dx);
+  return Math.floor(toDeg(rad));
+};
+
 export const getRelativeDirection = (
   vector1: Vector,
   vector2: Vector
@@ -79,3 +85,22 @@ export const getRelativeDirection = (
 
   return DIRECTIONS[roundedAngle === 8 ? 0 : roundedAngle];
 };
+
+export const getLineEnd = (
+  start: Vector,
+  heading: Vector,
+  length: number
+): Vector => {
+  const direction = getDirection(heading);
+  if (typeof direction === "undefined") {
+    return start;
+  }
+
+  const angle = toRad(direction);
+  const y = start.y + length * Math.sin(angle);
+  const x = start.x + length * Math.cos(angle);
+
+  return { x, y };
+};
+
+export const isDiag = (vector: Vector) => vector.x !== 0 && vector.y !== 0;

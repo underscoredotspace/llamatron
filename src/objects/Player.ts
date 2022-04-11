@@ -4,36 +4,47 @@ import {
   SCREEN_HEIGHT,
   PLAYER_SPEED,
   PLAYER_DIAG_SPEED,
+  PLAYER_START_POSITION,
+  NEW_VECTOR,
 } from "../constants";
-import { Direction, getDirection, getHeading, Vector } from "../direction";
+import {
+  Direction,
+  getDirection,
+  getHeading,
+  isDiag,
+  Vector,
+} from "../direction";
 import { clamp } from "../helpers";
-import { BulletController } from "./Bullet";
+import { BulletControllerInstance } from "./Bullet";
 import { Move } from "./Player.types";
 
-const STARTING_X = SCREEN_WIDTH / 2 - SPRITE_SIZE / 2;
-const STARTING_Y = SCREEN_HEIGHT / 2 - SPRITE_SIZE / 2;
-
-export const Player = (context: CanvasRenderingContext2D) => {
-  const bullets = BulletController(context);
-
+export const Player = (
+  context: CanvasRenderingContext2D,
+  bullets: BulletControllerInstance
+) => {
   let nextFire = 0;
 
-  let xPos = STARTING_X;
-  let yPos = STARTING_Y;
-  let xHead = 0;
-  let yHead = 0;
+  let position: Vector = { ...PLAYER_START_POSITION };
+  let heading: Vector = { ...NEW_VECTOR };
   let direction = Direction.LEFT;
   let hold = false;
 
-  const isHeadDiag = () => xHead !== 0 && yHead !== 0;
-
-  const getPosition = (): Vector => ({ x: xPos, y: yPos });
+  const getPosition = (): Vector => position;
+  const getBullets = () => bullets.getBullets();
 
   const update = () => {
-    let speed = isHeadDiag() ? PLAYER_DIAG_SPEED : PLAYER_SPEED;
+    let speed = isDiag(heading) ? PLAYER_DIAG_SPEED : PLAYER_SPEED;
 
-    xPos = clamp(xPos + xHead * speed, 0, SCREEN_WIDTH - SPRITE_SIZE);
-    yPos = clamp(yPos + yHead * speed, 0, SCREEN_HEIGHT - SPRITE_SIZE);
+    position.x = clamp(
+      position.x + heading.x * speed,
+      0,
+      SCREEN_WIDTH - SPRITE_SIZE
+    );
+    position.y = clamp(
+      position.y + heading.y * speed,
+      0,
+      SCREEN_HEIGHT - SPRITE_SIZE
+    );
 
     fire();
   };
@@ -46,18 +57,20 @@ export const Player = (context: CanvasRenderingContext2D) => {
 
     nextFire = 15;
 
-    const { x, y } = getHeading(direction);
-    bullets.fire(xPos + SPRITE_SIZE / 2, yPos + SPRITE_SIZE / 2, x, y);
+    bullets.fire(
+      { x: position.x + SPRITE_SIZE / 2, y: position.y + SPRITE_SIZE / 2 },
+      getHeading(direction)
+    );
   };
 
   const draw = () => {
     context.fillStyle = "gold";
-    context.fillRect(xPos, yPos, SPRITE_SIZE, SPRITE_SIZE);
+    context.fillRect(position.x, position.y, SPRITE_SIZE, SPRITE_SIZE);
     bullets.draw();
   };
 
   const setDirection = () => {
-    const newDirection = getDirection(xHead, yHead);
+    const newDirection = getDirection(heading);
 
     if (typeof newDirection !== "undefined" && newDirection !== direction) {
       direction = newDirection;
@@ -69,15 +82,15 @@ export const Player = (context: CanvasRenderingContext2D) => {
   };
 
   const move: Move = ({ x, y }) => {
-    if (x === xHead && y === yHead) {
+    if (x === heading.x && y === heading.y) {
       return;
     }
     if (typeof x !== "undefined") {
-      xHead = x;
+      heading.x = x;
     }
 
     if (typeof y !== "undefined") {
-      yHead = y;
+      heading.y = y;
     }
 
     if (!hold) {
@@ -85,11 +98,20 @@ export const Player = (context: CanvasRenderingContext2D) => {
     }
   };
 
+  const reset = () => {
+    nextFire = 0;
+
+    position = { ...PLAYER_START_POSITION };
+    heading = { ...NEW_VECTOR };
+    direction = Direction.LEFT;
+    hold = false;
+
+    bullets.reset();
+  };
+
   const _v = () => ({
-    xPos,
-    yPos,
-    xHead,
-    yHead,
+    position,
+    heading,
     direction,
   });
 
@@ -99,6 +121,8 @@ export const Player = (context: CanvasRenderingContext2D) => {
     move,
     setHold,
     getPosition,
+    getBullets,
+    reset,
     _v,
     _f: {
       setDirection,

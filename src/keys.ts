@@ -1,4 +1,4 @@
-import { debugElement } from "./debug";
+import { debugElement, enableDebug } from "./debug";
 
 interface Keys {
   [key: string]: boolean;
@@ -7,7 +7,7 @@ interface Keys {
 const keysElement = debugElement.querySelector<HTMLDivElement>("pre")!;
 
 const setKeys = (keys: Keys) => {
-  if (import.meta.env.PROD) {
+  if (!enableDebug) {
     return;
   }
 
