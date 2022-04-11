@@ -55,7 +55,7 @@ export const Player = (
       return;
     }
 
-    nextFire = 15;
+    nextFire = 10;
 
     bullets.fire(
       { x: position.x + SPRITE_SIZE / 2, y: position.y + SPRITE_SIZE / 2 },
