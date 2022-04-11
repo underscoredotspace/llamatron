@@ -3,7 +3,7 @@ import { Player } from "./objects/Player";
 import { keys } from "./keys";
 import { getScreen } from "./screen";
 import "./style.css";
-import { Baddie, BaddieType } from "./objects/Baddie";
+import { BaddieController as Baddie, BaddieType } from "./objects/Baddie";
 import { enableDebug } from "./debug";
 import { BulletController } from "./objects/Bullet";
 

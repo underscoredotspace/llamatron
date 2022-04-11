@@ -8,9 +8,25 @@ import {
 } from "../constants";
 import { getLineEnd, isDiag, Vector } from "../direction";
 
-export interface Bullet {
-  position: Vector;
-  heading: Vector;
+export class Bullet {
+  private spent = false;
+  public position: Vector;
+  public heading: Vector;
+
+  constructor(position: Vector, heading: Vector) {
+    this.position = position;
+    this.heading = heading;
+  }
+
+  public setSpent() {
+    this.spent = true;
+  }
+
+  public setPosition(position: Vector) {
+    this.position = position;
+  }
+
+  public getIsSpent = () => this.spent;
 }
 
 export const BulletController = (context: CanvasRenderingContext2D) => {
@@ -19,24 +35,23 @@ export const BulletController = (context: CanvasRenderingContext2D) => {
   const getBullets = () => bullets;
 
   const fire = (position: Vector, heading: Vector) => {
-    bullets.push({ position, heading });
+    bullets.push(new Bullet(position, heading));
   };
 
   const update = () => {
     bullets = bullets
-      .map(({ position, heading, ...others }) => {
-        const speed = isDiag(heading)
+      .filter((bullet) => !bullet.getIsSpent())
+      .map((bullet) => {
+        const speed = isDiag(bullet.heading)
           ? PLAYER_BULLET_DIAG_SPEED
           : PLAYER_BULLET_SPEED;
 
-        return {
-          position: {
-            x: position.x + heading.x * speed,
-            y: position.y + heading.y * speed,
-          },
-          heading,
-          ...others,
-        };
+        bullet.setPosition({
+          x: bullet.position.x + bullet.heading.x * speed,
+          y: bullet.position.y + bullet.heading.y * speed,
+        });
+
+        return bullet;
       })
       .filter(
         ({ position }) =>

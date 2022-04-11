@@ -67,8 +67,8 @@ export const BaddieController = (
           bullet.position.y > top &&
           bullet.position.y < bottom)
       ) {
-        console.log("a baddie is dead");
         dead = true;
+        bullet.setSpent();
       }
     });
   };
