@@ -1,12 +1,12 @@
 import { Direction } from "../direction";
-import { Player } from "./Player";
+import { PlayerController } from "./Player";
 
 describe("Player object", () => {
   const context = {} as any;
   const bullets = {} as any;
 
   test("intial state", () => {
-    const player = Player(context, bullets);
+    const player = PlayerController(context, bullets);
 
     expect(player._v()).toEqual({
       direction: Direction.LEFT,
@@ -32,7 +32,7 @@ describe("Player object", () => {
     ${-1}        | ${1}         | ${Direction.DOWNLEFT}
     ${1}         | ${1}         | ${Direction.DOWNRIGHT}
   `("move({ x: $x, y: $y })", ({ x, y, direction }) => {
-    const player = Player(context, bullets);
+    const player = PlayerController(context, bullets);
     player.move({ x });
     player.move({ y });
     player._f.setDirection();

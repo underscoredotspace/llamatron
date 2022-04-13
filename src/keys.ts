@@ -4,10 +4,10 @@ interface Keys {
   [key: string]: boolean;
 }
 
-const keysElement = debugElement.querySelector<HTMLDivElement>("pre")!;
+const keysElement = debugElement?.querySelector<HTMLDivElement>("pre");
 
 const setKeys = (keys: Keys) => {
-  if (!enableDebug) {
+  if (!keysElement || !enableDebug) {
     return;
   }
 

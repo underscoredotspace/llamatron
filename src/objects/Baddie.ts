@@ -6,7 +6,10 @@ import {
   Vector,
 } from "../direction";
 import { random } from "../helpers";
-import { Bullet } from "./Bullet";
+import { intersects } from "../intersection";
+import { Player } from "./Player";
+
+const BOX_SIZE = { w: SPRITE_SIZE, h: SPRITE_SIZE };
 
 export const BaddieController = (
   context: CanvasRenderingContext2D,
@@ -15,7 +18,7 @@ export const BaddieController = (
   let position: Vector = { ...startPosition };
   let heading: Vector = { ...NEW_VECTOR };
   let lastMoveTime = 0;
-  let moveTimeOffset = random(0, 10);
+  const moveTimeOffset = random(0, 10);
   let dead = false;
 
   const move = () => {
@@ -31,6 +34,7 @@ export const BaddieController = (
 
   const draw = () => {
     context.fillStyle = "blue";
+    context.restore();
     context.fillRect(position.x, position.y, SPRITE_SIZE, SPRITE_SIZE);
   };
 
@@ -44,11 +48,8 @@ export const BaddieController = (
     heading = { ...NEW_VECTOR };
   };
 
-  const checkIntersection = (bullets: Bullet[]) => {
-    const top = position.y;
-    const left = position.x;
-    const bottom = top + SPRITE_SIZE;
-    const right = left + SPRITE_SIZE;
+  const checkIntersection = (player: Player) => {
+    const bullets = player.getBullets();
 
     bullets.forEach((bullet) => {
       const bulletEnd = getLineEnd(
@@ -58,17 +59,22 @@ export const BaddieController = (
       );
 
       if (
-        (bulletEnd.x > left &&
-          bulletEnd.x < right &&
-          bulletEnd.y > top &&
-          bulletEnd.y < bottom) ||
-        (bullet.position.x > left &&
-          bullet.position.x < right &&
-          bullet.position.y > top &&
-          bullet.position.y < bottom)
+        intersects.lineRect(bullet.position, bulletEnd, position, {
+          w: SPRITE_SIZE,
+          h: SPRITE_SIZE,
+        })
       ) {
         dead = true;
         bullet.setSpent();
+      }
+
+      if (
+        intersects.rectRect(
+          { ...position, ...BOX_SIZE },
+          { ...player.getPosition(), ...BOX_SIZE }
+        )
+      ) {
+        player.setDead();
       }
     });
   };

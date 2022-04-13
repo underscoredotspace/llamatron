@@ -18,7 +18,7 @@ import { clamp } from "../helpers";
 import { BulletControllerInstance } from "./Bullet";
 import { Move } from "./Player.types";
 
-export const Player = (
+export const PlayerController = (
   context: CanvasRenderingContext2D,
   bullets: BulletControllerInstance
 ) => {
@@ -28,12 +28,18 @@ export const Player = (
   let heading: Vector = { ...NEW_VECTOR };
   let direction = Direction.LEFT;
   let hold = false;
+  let dead = false;
 
   const getPosition = (): Vector => position;
   const getBullets = () => bullets.getBullets();
+  const isAlive = () => !dead;
+
+  const setDead = () => {
+    dead = true;
+  };
 
   const update = () => {
-    let speed = isDiag(heading) ? PLAYER_DIAG_SPEED : PLAYER_SPEED;
+    const speed = isDiag(heading) ? PLAYER_DIAG_SPEED : PLAYER_SPEED;
 
     position.x = clamp(
       position.x + heading.x * speed,
@@ -47,6 +53,7 @@ export const Player = (
     );
 
     fire();
+    bullets.update();
   };
 
   const fire = () => {
@@ -105,6 +112,7 @@ export const Player = (
     heading = { ...NEW_VECTOR };
     direction = Direction.LEFT;
     hold = false;
+    dead = false;
 
     bullets.reset();
   };
@@ -123,9 +131,13 @@ export const Player = (
     getPosition,
     getBullets,
     reset,
+    setDead,
+    isAlive,
     _v,
     _f: {
       setDirection,
     },
   };
 };
+
+export type Player = ReturnType<typeof PlayerController>;

@@ -1,5 +1,5 @@
 import { SCREEN_HEIGHT, SCREEN_WIDTH, SPRITE_SIZE } from "./constants";
-import { Player } from "./objects/Player";
+import { PlayerController } from "./objects/Player";
 import { keys } from "./keys";
 import { getScreen } from "./screen";
 import "./style.css";
@@ -10,7 +10,7 @@ import { BulletController } from "./objects/Bullet";
 const { context } = getScreen();
 
 const bulletController = BulletController(context);
-const player = Player(context, bulletController);
+const player = PlayerController(context, bulletController);
 let paused = false;
 
 export const setPaused = () => (paused = true);
@@ -54,7 +54,7 @@ const checkKeys = () => {
 };
 
 let lastRender = 0;
-const fps = 30;
+const fps = 60;
 const fpsInterval = 1000 / fps;
 
 const animate = (newtime: number) => {
@@ -63,21 +63,27 @@ const animate = (newtime: number) => {
 
   const elapsed = newtime - lastRender;
   if (paused || elapsed < fpsInterval) return;
+  lastRender = newtime;
 
   context.clearRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
   player.update();
   player.draw();
 
+  if (!player.isAlive()) {
+    player.reset();
+    baddies.forEach(({ reset }) => reset());
+    return;
+  }
+
   const playerPosition = player.getPosition();
-  const playerBullets = player.getBullets();
 
   baddies = baddies.filter((baddie) => baddie.isAlive());
 
   baddies.forEach((baddie) => {
     baddie.setHeading(playerPosition);
     baddie.move();
-    baddie.checkIntersection(playerBullets);
+    baddie.checkIntersection(player);
     baddie.draw();
   });
 };

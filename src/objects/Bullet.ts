@@ -63,8 +63,6 @@ export const BulletController = (context: CanvasRenderingContext2D) => {
   };
 
   const draw = () => {
-    update();
-
     bullets.forEach(({ position, heading }) => {
       const end = getLineEnd(position, heading, PLAYER_BULLET_LENGTH);
 
@@ -81,7 +79,7 @@ export const BulletController = (context: CanvasRenderingContext2D) => {
     bullets = [];
   };
 
-  return { draw, fire, getBullets, reset, _f: () => ({ update }) };
+  return { draw, fire, update, getBullets, reset };
 };
 
 export type BulletControllerInstance = ReturnType<typeof BulletController>;
