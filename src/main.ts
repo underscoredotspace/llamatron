@@ -6,6 +6,8 @@ import "./style.css";
 import { BaddieController as Baddie, BaddieType } from "./objects/Baddie";
 import { enableDebug } from "./debug";
 import { BulletController } from "./objects/Bullet";
+import { SEGMENTS } from "./segments";
+import { random } from "./helpers";
 
 const { context } = getScreen();
 
@@ -15,15 +17,19 @@ let paused = false;
 
 export const setPaused = () => (paused = true);
 
-let baddies: BaddieType[] = [
-  Baddie(context, { x: 50, y: 50 }),
-  Baddie(context, { x: SCREEN_WIDTH - 50 - SPRITE_SIZE, y: 50 }),
-  Baddie(context, { x: 50, y: SCREEN_HEIGHT - 50 - SPRITE_SIZE }),
-  Baddie(context, {
-    x: SCREEN_WIDTH - 50 - SPRITE_SIZE,
-    y: SCREEN_HEIGHT - 50 - SPRITE_SIZE,
-  }),
-];
+let baddies: BaddieType[] = [];
+
+for (let index = 0; index < 40; index++) {
+  const segmentIndex = index % SEGMENTS.length;
+  const segment = SEGMENTS[segmentIndex];
+
+  const baddie = Baddie(context, {
+    x: random(segment.x, segment.x + segment.w - SPRITE_SIZE),
+    y: random(segment.y, segment.y + segment.h - SPRITE_SIZE),
+  });
+
+  baddies.push(baddie);
+}
 
 const checkKeys = () => {
   paused = keys["pause"];
