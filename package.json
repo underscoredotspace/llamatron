@@ -32,11 +32,6 @@
       "src/"
     ]
   },
-  "git": {
-    "scripts": {
-      "pre-commit": "npx lint-staged"
-    }
-  },
   "lint-staged": {
     "src/**/*.ts": [
       "eslint --max-warnings=0"
