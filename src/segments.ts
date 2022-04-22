@@ -1,8 +1,5 @@
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "./constants";
-import { Vector } from "./direction";
-import { Dimensions } from "./intersection";
-
-export type Box = Vector & Dimensions;
+import { Vector, Box } from "./types";
 
 const SEGMENT_HEIGHT = SCREEN_HEIGHT / 3;
 const SEGMENT_WIDTH = SCREEN_WIDTH / 3;
@@ -24,10 +21,6 @@ const SEGMENT_MR = createSegment({
 });
 
 const SEGMENT_BL = createSegment({ x: 0, y: SCREEN_HEIGHT - SEGMENT_HEIGHT });
-const SEGMENT_BM = createSegment({
-  x: SEGMENT_WIDTH,
-  y: SCREEN_HEIGHT - SEGMENT_HEIGHT,
-});
 const SEGMENT_BR = createSegment({
   x: SCREEN_WIDTH - SEGMENT_WIDTH,
   y: SCREEN_HEIGHT - SEGMENT_HEIGHT,
@@ -41,5 +34,4 @@ export const SEGMENTS: Box[] = [
   SEGMENT_ML,
   SEGMENT_MR,
   SEGMENT_TM,
-  SEGMENT_BM,
 ];

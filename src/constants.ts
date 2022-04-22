@@ -1,4 +1,4 @@
-import { Vector } from "./direction";
+import { Vector } from "./types";
 
 const diag = (value: number): number => Math.sqrt(Math.pow(value, 2) / 2);
 

@@ -1,27 +1,29 @@
 import { NEW_VECTOR, PLAYER_BULLET_LENGTH, SPRITE_SIZE } from "../constants";
-import {
-  getHeading,
-  getLineEnd,
-  getRelativeDirection,
-  Vector,
-} from "../direction";
-import { random } from "../helpers";
-import { intersects } from "../intersection";
-import { Player } from "./Player";
+import { getHeading, getLineEnd, getRelativeDirection } from "../direction";
+import { random } from "../helpers/math";
+import { intersects } from "../helpers/intersection";
+import { Vector } from "../types";
+import { Player } from "./Player.types";
+import { Baddie } from "./Baddie.types";
+import { enableDebug } from "../debug";
+import { rectangle } from "../helpers/draw";
 
 const BOX_SIZE = { w: SPRITE_SIZE, h: SPRITE_SIZE };
 
-export const BaddieController = (
+export const CreateBaddie = (
   context: CanvasRenderingContext2D,
   startPosition: Vector
-) => {
+): Baddie => {
   let position: Vector = { ...startPosition };
   let heading: Vector = { ...NEW_VECTOR };
   let lastMoveTime = 0;
   const moveTimeOffset = random(0, 10);
-  let dead = false;
+  let destroyed = false;
 
-  const move = () => {
+  const getSize = () => ({ w: SPRITE_SIZE, h: SPRITE_SIZE });
+  const getPosition = () => position;
+
+  const update = () => {
     if (lastMoveTime > 0) {
       lastMoveTime--;
       return;
@@ -33,9 +35,7 @@ export const BaddieController = (
   };
 
   const draw = () => {
-    context.fillStyle = "blue";
-    context.restore();
-    context.fillRect(position.x, position.y, SPRITE_SIZE, SPRITE_SIZE);
+    rectangle(context, position, getSize(), { fillStyle: "blue" });
   };
 
   const setHeading = (playerPosition: Vector) => {
@@ -49,46 +49,51 @@ export const BaddieController = (
   };
 
   const checkIntersection = (player: Player) => {
-    const bullets = player.getBullets();
-
-    bullets.forEach((bullet) => {
+    player.getBullets().forEach((bullet) => {
       const bulletEnd = getLineEnd(
         bullet.position,
         bullet.heading,
         PLAYER_BULLET_LENGTH
       );
 
+      // player's bullet has hit baddie
       if (
-        intersects.lineRect(bullet.position, bulletEnd, position, {
-          w: SPRITE_SIZE,
-          h: SPRITE_SIZE,
-        })
+        intersects.lineRect(
+          bullet.position,
+          bulletEnd,
+          position,
+          player.getSize()
+        )
       ) {
-        dead = true;
+        destroyed = true;
         bullet.setSpent();
       }
 
+      // baddie has hit player
       if (
         intersects.rectRect(
           { ...position, ...BOX_SIZE },
-          { ...player.getPosition(), ...BOX_SIZE }
+          { ...player.getPosition(), ...player.getSize() }
         )
       ) {
-        player.setDead();
+        player.setDestroyed();
       }
     });
   };
 
-  const isAlive = () => !dead;
+  const setDestroyed = () => undefined;
+  const isDestroyed = () => destroyed;
 
   return {
-    move,
+    update,
     draw,
+    getPosition,
     setHeading,
+    getSize,
     reset,
     checkIntersection,
-    isAlive,
+    isDestroyed,
+    setDestroyed,
+    debug: enableDebug ? { get: () => ({}) } : {},
   };
 };
-
-export type BaddieType = ReturnType<typeof BaddieController>;

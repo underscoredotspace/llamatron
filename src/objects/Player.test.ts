@@ -1,14 +1,15 @@
 import { Direction } from "../direction";
-import { PlayerController } from "./Player";
+import { CreatePlayer } from "./Player";
+jest.mock("../debug");
 
 describe("Player object", () => {
   const context = {} as any;
   const bullets = {} as any;
 
   test("intial state", () => {
-    const player = PlayerController(context, bullets);
+    const player = CreatePlayer(context, bullets);
 
-    expect(player._v()).toEqual({
+    expect(player.debug.get()).toEqual({
       direction: Direction.LEFT,
       position: {
         x: 312,
@@ -32,12 +33,12 @@ describe("Player object", () => {
     ${-1}        | ${1}         | ${Direction.DOWNLEFT}
     ${1}         | ${1}         | ${Direction.DOWNRIGHT}
   `("move({ x: $x, y: $y })", ({ x, y, direction }) => {
-    const player = PlayerController(context, bullets);
+    const player = CreatePlayer(context, bullets);
     player.move({ x });
     player.move({ y });
-    player._f.setDirection();
+    player.debug.setDirection();
 
-    expect(player._v()).toMatchObject({
+    expect(player.debug.get()).toMatchObject({
       direction,
       heading: {
         x: x ?? 0,

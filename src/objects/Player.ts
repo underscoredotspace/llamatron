@@ -7,35 +7,34 @@ import {
   PLAYER_START_POSITION,
   NEW_VECTOR,
 } from "../constants";
-import {
-  Direction,
-  getDirection,
-  getHeading,
-  isDiag,
-  Vector,
-} from "../direction";
-import { clamp } from "../helpers";
+import { Direction, getDirection, getHeading } from "../direction";
+import { clamp } from "../helpers/math";
+import { isDiag } from "../helpers/angle";
+import { Dimensions, Vector } from "../types";
 import { BulletControllerInstance } from "./Bullet";
-import { Move } from "./Player.types";
+import { Player } from "./Player.types";
+import { rectangle } from "../helpers/draw";
+import { enableDebug } from "../debug";
 
-export const PlayerController = (
+export const CreatePlayer = (
   context: CanvasRenderingContext2D,
   bullets: BulletControllerInstance
-) => {
+): Player => {
   let nextFire = 0;
 
   let position: Vector = { ...PLAYER_START_POSITION };
   let heading: Vector = { ...NEW_VECTOR };
   let direction = Direction.LEFT;
-  let hold = false;
-  let dead = false;
+  let strafe = false;
+  let destroyed = false;
 
   const getPosition = (): Vector => position;
+  const getSize = (): Dimensions => ({ w: SPRITE_SIZE, h: SPRITE_SIZE });
   const getBullets = () => bullets.getBullets();
-  const isAlive = () => !dead;
+  const isDestroyed = () => destroyed;
 
-  const setDead = () => {
-    dead = true;
+  const setDestroyed = () => {
+    destroyed = true;
   };
 
   const update = () => {
@@ -62,7 +61,7 @@ export const PlayerController = (
       return;
     }
 
-    nextFire = 10;
+    nextFire = 5;
 
     bullets.fire(
       { x: position.x + SPRITE_SIZE / 2, y: position.y + SPRITE_SIZE / 2 },
@@ -71,8 +70,12 @@ export const PlayerController = (
   };
 
   const draw = () => {
-    context.fillStyle = "gold";
-    context.fillRect(position.x, position.y, SPRITE_SIZE, SPRITE_SIZE);
+    rectangle(
+      context,
+      position,
+      { w: SPRITE_SIZE, h: SPRITE_SIZE },
+      { fillStyle: "gold" }
+    );
     bullets.draw();
   };
 
@@ -84,11 +87,11 @@ export const PlayerController = (
     }
   };
 
-  const setHold = (shouldHold: boolean) => {
-    hold = shouldHold;
+  const setStrafe: Player["setStrafe"] = (newStrafe) => {
+    strafe = newStrafe;
   };
 
-  const move: Move = ({ x, y }) => {
+  const move: Player["move"] = ({ x, y }) => {
     if (x === heading.x && y === heading.y) {
       return;
     }
@@ -100,7 +103,7 @@ export const PlayerController = (
       heading.y = y;
     }
 
-    if (!hold) {
+    if (!strafe) {
       setDirection();
     }
   };
@@ -111,33 +114,26 @@ export const PlayerController = (
     position = { ...PLAYER_START_POSITION };
     heading = { ...NEW_VECTOR };
     direction = Direction.LEFT;
-    hold = false;
-    dead = false;
+    strafe = false;
+    destroyed = false;
 
     bullets.reset();
   };
-
-  const _v = () => ({
-    position,
-    heading,
-    direction,
-  });
 
   return {
     update,
     draw,
     move,
-    setHold,
+    setStrafe,
     getPosition,
+    getSize,
+    fire,
     getBullets,
     reset,
-    setDead,
-    isAlive,
-    _v,
-    _f: {
-      setDirection,
-    },
+    setDestroyed,
+    isDestroyed,
+    debug: enableDebug
+      ? { get: () => ({ direction, position, heading }), setDirection }
+      : {},
   };
 };
-
-export type Player = ReturnType<typeof PlayerController>;

@@ -1,29 +1,30 @@
 import { SCREEN_HEIGHT, SCREEN_WIDTH, SPRITE_SIZE } from "./constants";
-import { PlayerController } from "./objects/Player";
+import { CreatePlayer } from "./objects/Player";
 import { keys } from "./keys";
 import { getScreen } from "./screen";
 import "./style.css";
-import { BaddieController as Baddie, BaddieType } from "./objects/Baddie";
+import { CreateBaddie } from "./objects/Baddie";
 import { enableDebug } from "./debug";
 import { BulletController } from "./objects/Bullet";
 import { SEGMENTS } from "./segments";
-import { random } from "./helpers";
+import { random } from "./helpers/math";
+import { Baddie } from "./objects/Baddie.types";
 
 const { context } = getScreen();
 
 const bulletController = BulletController(context);
-const player = PlayerController(context, bulletController);
+const player = CreatePlayer(context, bulletController);
 let paused = false;
 
 export const setPaused = () => (paused = true);
 
-let baddies: BaddieType[] = [];
+let baddies: Baddie[] = [];
 
 for (let index = 0; index < 40; index++) {
   const segmentIndex = index % SEGMENTS.length;
   const segment = SEGMENTS[segmentIndex];
 
-  const baddie = Baddie(context, {
+  const baddie = CreateBaddie(context, {
     x: random(segment.x, segment.x + segment.w - SPRITE_SIZE),
     y: random(segment.y, segment.y + segment.h - SPRITE_SIZE),
   });
@@ -56,7 +57,7 @@ const checkKeys = () => {
     player.move({ y: 1 });
   }
 
-  player.setHold(keys["Shift"]);
+  player.setStrafe(keys["Shift"]);
 };
 
 let lastRender = 0;
@@ -76,7 +77,7 @@ const animate = (newtime: number) => {
   player.update();
   player.draw();
 
-  if (!player.isAlive()) {
+  if (player.isDestroyed()) {
     player.reset();
     baddies.forEach(({ reset }) => reset());
     return;
@@ -84,11 +85,11 @@ const animate = (newtime: number) => {
 
   const playerPosition = player.getPosition();
 
-  baddies = baddies.filter((baddie) => baddie.isAlive());
+  baddies = baddies.filter((baddie) => !baddie.isDestroyed());
 
   baddies.forEach((baddie) => {
     baddie.setHeading(playerPosition);
-    baddie.move();
+    baddie.update();
     baddie.checkIntersection(player);
     baddie.draw();
   });

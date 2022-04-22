@@ -1,3 +1,6 @@
+import { toDeg, toRad } from "./helpers/angle";
+import { Vector } from "./types";
+
 export enum Direction {
   UP = 0,
   UPRIGHT = 45,
@@ -30,11 +33,6 @@ export const DirectionMap = [
 export const getDirection = (heading: Vector): Direction | undefined =>
   DirectionMap[Math.floor(heading.y) + 1][Math.floor(heading.x) + 1];
 
-export interface Vector {
-  x: number;
-  y: number;
-}
-
 interface Headings {
   [direction: number]: Vector;
 }
@@ -51,22 +49,6 @@ const HEADINGS: Headings = {
 };
 
 export const getHeading = (direction: Direction): Vector => HEADINGS[direction];
-
-export const toDeg = (rad: number) => {
-  const deg = (rad * 180) / Math.PI - 90;
-
-  if (deg >= 360) {
-    return deg - 360;
-  }
-
-  if (deg < 0) {
-    return deg + 360;
-  }
-
-  return deg;
-};
-
-export const toRad = (deg: number) => ((deg - 90) * Math.PI) / 180;
 
 // Returns vector2's angle relative to vector1
 export const getRelativeAngle = (vector1: Vector, vector2: Vector): number => {
@@ -103,5 +85,3 @@ export const getLineEnd = (
 
   return { x, y };
 };
-
-export const isDiag = (vector: Vector) => vector.x !== 0 && vector.y !== 0;

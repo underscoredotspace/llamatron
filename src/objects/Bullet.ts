@@ -6,7 +6,9 @@ import {
   SCREEN_HEIGHT,
   SCREEN_WIDTH,
 } from "../constants";
-import { getLineEnd, isDiag, Vector } from "../direction";
+import { getLineEnd } from "../direction";
+import { isDiag } from "../helpers/angle";
+import { Vector } from "../types";
 
 export class Bullet {
   private spent = false;
