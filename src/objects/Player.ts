@@ -12,14 +12,14 @@ import { clamp } from "../helpers/math";
 import { isDiag } from "../helpers/angle";
 import { Dimensions, Vector } from "../types";
 import { BulletControllerInstance } from "./Bullet";
-import { Player } from "./Player.types";
+
 import { rectangle } from "../helpers/draw";
 import { enableDebug } from "../debug";
+import { Player } from "./Player.types";
+import { keys } from "../keys";
+import { listenToEvents } from "../helpers/events";
 
-export const CreatePlayer = (
-  context: CanvasRenderingContext2D,
-  bullets: BulletControllerInstance
-): Player => {
+export const CreatePlayer = (bullets: BulletControllerInstance): Player => {
   let nextFire = 0;
 
   let position: Vector = { ...PLAYER_START_POSITION };
@@ -37,6 +37,27 @@ export const CreatePlayer = (
     destroyed = true;
   };
 
+  listenToEvents(["keydown", "keyup"], () => {
+    // check x
+    if (!keys["ArrowLeft"] && !keys["ArrowRight"]) {
+      move({ x: 0 });
+    } else if (keys["ArrowLeft"] && !keys["ArrowRight"]) {
+      move({ x: -1 });
+    } else if (keys["ArrowRight"] && !keys["ArrowLeft"]) {
+      move({ x: 1 });
+    }
+    // check y
+    if (!keys["ArrowUp"] && !keys["ArrowDown"]) {
+      move({ y: 0 });
+    } else if (keys["ArrowUp"] && !keys["ArrowDown"]) {
+      move({ y: -1 });
+    } else if (keys["ArrowDown"] && !keys["ArrowUp"]) {
+      move({ y: 1 });
+    }
+
+    setStrafe(keys["Shift"]);
+  });
+
   const update = () => {
     const speed = isDiag(heading) ? PLAYER_DIAG_SPEED : PLAYER_SPEED;
 
@@ -52,7 +73,6 @@ export const CreatePlayer = (
     );
 
     fire();
-    bullets.update();
   };
 
   const fire = () => {
@@ -71,7 +91,6 @@ export const CreatePlayer = (
 
   const draw = () => {
     rectangle(
-      context,
       position,
       { w: SPRITE_SIZE, h: SPRITE_SIZE },
       { fillStyle: "gold" }

@@ -8,6 +8,7 @@ import {
 } from "../constants";
 import { getLineEnd } from "../direction";
 import { isDiag } from "../helpers/angle";
+import { line } from "../helpers/draw";
 import { Vector } from "../types";
 
 export class Bullet {
@@ -31,7 +32,7 @@ export class Bullet {
   public getIsSpent = () => this.spent;
 }
 
-export const BulletController = (context: CanvasRenderingContext2D) => {
+export const BulletController = () => {
   let bullets: Bullet[] = [];
 
   const getBullets = () => bullets;
@@ -67,13 +68,7 @@ export const BulletController = (context: CanvasRenderingContext2D) => {
   const draw = () => {
     bullets.forEach(({ position, heading }) => {
       const end = getLineEnd(position, heading, PLAYER_BULLET_LENGTH);
-
-      context.beginPath();
-      context.moveTo(position.x, position.y);
-      context.lineTo(end.x, end.y);
-      context.strokeStyle = PLAYER_BULLET_COLOR;
-      context.stroke();
-      context.closePath();
+      line(position, end, { strokeStyle: PLAYER_BULLET_COLOR });
     });
   };
 

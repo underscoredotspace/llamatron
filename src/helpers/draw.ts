@@ -1,12 +1,18 @@
+import { SCREEN_WIDTH, SCREEN_HEIGHT } from "../constants";
+import { getScreen } from "../screen";
 import { Dimensions, Vector } from "../types";
 
-interface RectangleOptions {
+interface StyleOptions {
   fillStyle?: string;
   strokeStyle?: string;
 }
 
+type RectangleOptions = StyleOptions;
+type LineOptions = Omit<StyleOptions, "fillStyle">;
+
+const context = getScreen().context;
+
 export const rectangle = (
-  context: CanvasRenderingContext2D,
   { x, y }: Vector,
   { w, h }: Dimensions,
   { fillStyle, strokeStyle }: RectangleOptions
@@ -21,3 +27,19 @@ export const rectangle = (
     context.strokeRect(x, y, w, h);
   }
 };
+
+export const line = (
+  start: Vector,
+  end: Vector,
+  { strokeStyle }: LineOptions = {}
+) => {
+  context.beginPath();
+  context.moveTo(start.x, start.y);
+  context.lineTo(end.x, end.y);
+  context.strokeStyle = strokeStyle ?? "";
+  context.stroke();
+  context.closePath();
+};
+
+export const clearScreen = () =>
+  context.clearRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);

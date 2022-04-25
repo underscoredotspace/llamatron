@@ -1,13 +1,13 @@
 import { Direction } from "../direction";
 import { CreatePlayer } from "./Player";
 jest.mock("../debug");
+jest.mock("../screen");
 
 describe("Player object", () => {
-  const context = {} as any;
   const bullets = {} as any;
 
   test("intial state", () => {
-    const player = CreatePlayer(context, bullets);
+    const player = CreatePlayer(bullets);
 
     expect(player.debug.get()).toEqual({
       direction: Direction.LEFT,
@@ -33,7 +33,7 @@ describe("Player object", () => {
     ${-1}        | ${1}         | ${Direction.DOWNLEFT}
     ${1}         | ${1}         | ${Direction.DOWNRIGHT}
   `("move({ x: $x, y: $y })", ({ x, y, direction }) => {
-    const player = CreatePlayer(context, bullets);
+    const player = CreatePlayer(bullets);
     player.move({ x });
     player.move({ y });
     player.debug.setDirection();
